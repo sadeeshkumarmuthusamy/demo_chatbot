@@ -6,6 +6,7 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS Vendor (
     Agreement_id                INTEGER       NOT NULL,
     Vendor_id                   INTEGER       NOT NULL,
+    Agreement_type               CHAR(04),
     Vendor_Name                 CHAR(100),
     Agreement_start_date        DATE,
     Agreement_end_date          DATE,
