@@ -1,0 +1,10 @@
+langchain
+langchain-core
+langgraph
+langchain-groq
+openai
+python-dotenv
+pydantic-settings
+fastapi
+uvicorn[standard]
+truststore
