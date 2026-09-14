@@ -13,17 +13,20 @@ from pathlib import Path
 # uvicorn's --reload subprocess).
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+import gradio as gr
 import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
 
 from src.agents.anamoly_agent import run_anomaly_check
 from src.agents.financerecon_agent import run_financerecon_check
+from src.ui.chatbotui import demo as chatbot_ui
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Vendor Agreement Anomaly Detection API")
+app = gr.mount_gradio_app(app, chatbot_ui, path="/chat")
 
 
 class AnomalyCheckRequest(BaseModel):

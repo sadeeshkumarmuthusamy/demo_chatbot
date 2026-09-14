@@ -304,15 +304,16 @@ def load_sap_invoice_history(conn: sqlite3.Connection) -> None:
     """
     bill_rows = conn.execute(
         """
-        SELECT Bill_nbr, sap_doc_nbr, Bill_date, Bill_amount,
+        SELECT Agreement_id, Bill_nbr, sap_doc_nbr, Bill_date, Bill_amount,
                Bill_credit_account, Bill_debit_account, posting_timestamp
         FROM Agreement_bill_history
         """
     ).fetchall()
 
     rows = []
-    for bill_nbr, sap_doc_nbr, bill_date, bill_amount, bill_credit_account, bill_debit_account, posting_timestamp in bill_rows:
+    for agreement_id, bill_nbr, sap_doc_nbr, bill_date, bill_amount, bill_credit_account, bill_debit_account, posting_timestamp in bill_rows:
         rows.append((
+            agreement_id,
             bill_nbr,
             sap_doc_nbr,
             bill_date,
@@ -329,10 +330,10 @@ def load_sap_invoice_history(conn: sqlite3.Connection) -> None:
     conn.executemany(
         """
         INSERT INTO SAP_Invoice_history (
-            SAP_Bill_nbr, SAP_Bill_document_nbr, SAP_Bill_date, Transaction_Date,
+            Agreement_id, SAP_Bill_nbr, SAP_Bill_document_nbr, SAP_Bill_date, Transaction_Date,
             sequence_nbr, SAP_Bill_amount, SAP_Bill_credit_amt, SAP_Bill_debit_amt,
             SAP_Bill_customer_account, SAP_Bill_company_amount, Transaction_Timestamp
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         rows,
     )
@@ -393,12 +394,13 @@ def load_sales_item_store_history(conn: sqlite3.Connection) -> None:
     For every SALE agreement (Vendor.Agreement_type = 'SALE'), create a
     matching Sales_item_store_history entry for each Agreement_allowance_history
     row: item_nbr, item_vendor, store_nbr, sales_date, and quantity/sales_qty
-    line up between the two tables.
+    line up between the two tables. item_cost is copied over as well.
     """
     allowance_rows = conn.execute(
         """
         SELECT a.Agreement_id, a.Vendor_id, a.item_nbr, a.store_nbr,
-               a.sales_date, a.seq_nbr, a.dept_nbr, a.quantity, a.purchase_order_id
+               a.sales_date, a.seq_nbr, a.dept_nbr, a.quantity, a.purchase_order_id,
+               a.item_cost
         FROM Agreement_allowance_history a
         JOIN Vendor v ON v.Agreement_id = a.Agreement_id AND v.Vendor_id = a.Vendor_id
         WHERE v.Agreement_type = 'SALE'
@@ -406,7 +408,7 @@ def load_sales_item_store_history(conn: sqlite3.Connection) -> None:
     ).fetchall()
 
     rows = []
-    for agreement_id, vendor_id, item_nbr, store_nbr, sales_date, seq_nbr, dept_nbr, quantity, purchase_order_id in allowance_rows:
+    for agreement_id, vendor_id, item_nbr, store_nbr, sales_date, seq_nbr, dept_nbr, quantity, purchase_order_id, item_cost in allowance_rows:
         sale_unique_id = f"{purchase_order_id}-{seq_nbr}"
         item_vendor = str(vendor_id)
         item_department = str(dept_nbr)
@@ -421,14 +423,16 @@ def load_sales_item_store_history(conn: sqlite3.Connection) -> None:
             seq_nbr,
             None,               # item_category
             quantity,
+            item_cost,
         ))
 
     conn.executemany(
         """
         INSERT INTO Sales_item_store_history (
             sale_unique_id, item_nbr, item_vendor, item_department,
-            store_nbr, sales_date, sequence_nbr, item_category, sales_qty
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            store_nbr, sales_date, sequence_nbr, item_category, sales_qty,
+            item_cost
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         rows,
     )

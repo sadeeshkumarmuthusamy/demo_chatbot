@@ -110,6 +110,7 @@ CREATE TABLE IF NOT EXISTS Agreement_journal_history (
 -- SAP_Invoice_history
 -- =========================================================
 CREATE TABLE IF NOT EXISTS SAP_Invoice_history (
+    Agreement_id               INTEGER,
     SAP_Bill_nbr               INTEGER       NOT NULL,
     SAP_Bill_document_nbr      CHAR(20)      NOT NULL,
     SAP_Bill_date              DATE          NOT NULL,
@@ -121,7 +122,8 @@ CREATE TABLE IF NOT EXISTS SAP_Invoice_history (
     SAP_Bill_customer_account  INTEGER,
     SAP_Bill_company_amount    INTEGER,
     Transaction_Timestamp      TIMESTAMP,
-    PRIMARY KEY (SAP_Bill_nbr, SAP_Bill_document_nbr, SAP_Bill_date, Transaction_Date, sequence_nbr)
+    PRIMARY KEY (SAP_Bill_nbr, SAP_Bill_document_nbr, SAP_Bill_date, Transaction_Date, sequence_nbr),
+    FOREIGN KEY (Agreement_id) REFERENCES Vendor (Agreement_id)
 );
 
 -- =========================================================
@@ -158,6 +160,7 @@ CREATE TABLE IF NOT EXISTS Sales_item_store_history (
     sequence_nbr      INTEGER  NOT NULL,
     item_category     CHAR(20),
     sales_qty         INTEGER,
+    item_cost         DECIMAL(12,2),
     PRIMARY KEY (
         sale_unique_id, item_nbr, item_vendor, item_department,
         store_nbr, sales_date, sequence_nbr

@@ -8,3 +8,4 @@ pydantic-settings
 fastapi
 uvicorn[standard]
 truststore
+gradio
