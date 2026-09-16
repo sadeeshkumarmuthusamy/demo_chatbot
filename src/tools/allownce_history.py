@@ -19,6 +19,14 @@ DB_FILE = BASE_DIR / "mockup_db" / "vendor_agreement.db"
 class AgreementIdInput(BaseModel):
     agreement_id: int = Field(..., description="The agreement id to look up.")
 
+class CalculateAllowanceAmountInput(BaseModel):
+    agreement_id: int = Field(..., description="The agreement id the calculation is for.")
+    allowance_percentage: float = Field(
+        ..., description="The allowance percentage to apply, e.g. 5 for 5%."
+    )
+    total_sales_cost: float = Field(
+        ..., description="The total sales cost to apply the allowance percentage to."
+    )
 
 @tool("get_total_allowance_amount", args_schema=AgreementIdInput)
 def get_total_allowance_amount(agreement_id: int) -> float:
@@ -138,16 +146,6 @@ def get_agreement_details(agreement_id: int) -> Dict[str, Any]:
         "allowance_percent": allowance_percent,
         "item_list": item_list,
     }
-
-
-class CalculateAllowanceAmountInput(BaseModel):
-    agreement_id: int = Field(..., description="The agreement id the calculation is for.")
-    allowance_percentage: float = Field(
-        ..., description="The allowance percentage to apply, e.g. 5 for 5%."
-    )
-    total_sales_cost: float = Field(
-        ..., description="The total sales cost to apply the allowance percentage to."
-    )
 
 
 @tool("calculate_allowance_amount", args_schema=CalculateAllowanceAmountInput)

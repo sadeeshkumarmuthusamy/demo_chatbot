@@ -84,9 +84,9 @@ def build_anomaly_agent(model: str = DEFAULT_MODEL):
     return create_react_agent(llm, TOOLS, prompt=SYSTEM_PROMPT)
 
 
-def run_anomaly_check(agreement_id: int, model: str = DEFAULT_MODEL) -> str:
+def run_anomaly_check(agreement_id: int) -> str:
     """Run the anomaly-detection agent for the given agreement id and return its final answer."""
-    agent = build_anomaly_agent(model=model)
+    agent = build_anomaly_agent(model=DEFAULT_MODEL)
     result = agent.invoke(
         {
             "messages": [
@@ -97,12 +97,12 @@ def run_anomaly_check(agreement_id: int, model: str = DEFAULT_MODEL) -> str:
     return result["messages"][-1].content
 
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+# if __name__ == "__main__":
+#     logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-    parser = argparse.ArgumentParser(description="Run the allowance anomaly detection agent.")
-    parser.add_argument("agreement_id", type=int, help="Agreement id to check for anomalies.")
-    parser.add_argument("--model", default=DEFAULT_MODEL, help="Groq model to use.")
-    args = parser.parse_args()
+#     parser = argparse.ArgumentParser(description="Run the allowance anomaly detection agent.")
+#     parser.add_argument("agreement_id", type=int, help="Agreement id to check for anomalies.")
+#     parser.add_argument("--model", default=DEFAULT_MODEL, help="Groq model to use.")
+#     args = parser.parse_args()
 
-    print(run_anomaly_check(args.agreement_id, model=args.model))
+#     print(run_anomaly_check(args.agreement_id))

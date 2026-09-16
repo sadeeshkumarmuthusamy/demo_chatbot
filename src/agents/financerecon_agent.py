@@ -70,11 +70,11 @@ def run_financerecon_check(agreement_id: int) -> str:
     return result["messages"][-1].content
 
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+# if __name__ == "__main__":
+#     logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-    parser = argparse.ArgumentParser(description="Run the finance reconciliation agent.")
-    parser.add_argument("agreement_id", type=int, help="Agreement id to reconcile.")
-    args = parser.parse_args()
+#     parser = argparse.ArgumentParser(description="Run the finance reconciliation agent.")
+#     parser.add_argument("agreement_id", type=int, help="Agreement id to reconcile.")
+#     args = parser.parse_args()
 
-    print(run_financerecon_check(args.agreement_id))
+#     print(run_financerecon_check(args.agreement_id))

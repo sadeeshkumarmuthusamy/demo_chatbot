@@ -28,6 +28,20 @@ class TotalSalesCostInput(BaseModel):
     )
 
 
+class ItemLevelSalesInput(BaseModel):
+    item_nbrs: List[int] = Field(
+        ..., description="List of item numbers to summarize sales for."
+    )
+    start_date: date = Field(
+        ..., description="Start date (inclusive) of the sales period, format YYYY-MM-DD."
+    )
+    end_date: date = Field(
+        ..., description="End date (inclusive) of the sales period, format YYYY-MM-DD."
+    )
+    allowance_percentage: float = Field(
+        ..., description="The agreement allowance percentage to apply, e.g. 5 for 5%."
+    )
+
 @tool("get_total_sales_cost", args_schema=TotalSalesCostInput)
 def get_total_sales_cost(item_nbrs: List[int], start_date: date, end_date: date) -> float:
     """
@@ -58,21 +72,6 @@ def get_total_sales_cost(item_nbrs: List[int], start_date: date, end_date: date)
     )
 
     return round(total or 0.0, 2)
-
-
-class ItemLevelSalesInput(BaseModel):
-    item_nbrs: List[int] = Field(
-        ..., description="List of item numbers to summarize sales for."
-    )
-    start_date: date = Field(
-        ..., description="Start date (inclusive) of the sales period, format YYYY-MM-DD."
-    )
-    end_date: date = Field(
-        ..., description="End date (inclusive) of the sales period, format YYYY-MM-DD."
-    )
-    allowance_percentage: float = Field(
-        ..., description="The agreement allowance percentage to apply, e.g. 5 for 5%."
-    )
 
 
 @tool("get_item_level_sales_summary", args_schema=ItemLevelSalesInput)
